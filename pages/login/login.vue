@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { getCode, login, getUserInfo } from '@/common/api.js';
+import { getCode, login, getUserInfo, appPush } from '@/common/api.js';
 export default {
 	data() {
 		return {
@@ -45,10 +45,14 @@ export default {
 				password,
 				code,
 				uuid
-			}).then(data => {
-				this.$store.commit('SetToken', data.token);
-				this.getUserInfo();
-			});
+			})
+				.then(data => {
+					this.$store.commit('SetToken', data.token);
+					this.getUserInfo();
+				})
+				.catch(() => {
+					this.getCode();
+				});
 		},
 		getUserInfo() {
 			getUserInfo().then(data => {
@@ -58,7 +62,8 @@ export default {
 					url: '../index/index'
 				});
 			});
-		}
+		},
+	
 	}
 };
 </script>

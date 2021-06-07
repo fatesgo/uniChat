@@ -4,10 +4,21 @@ import { SOCKET_URL } from '@/common/config.js';
 export default {
 	onLaunch: function() {
 		console.log('App Launch');
+		// #ifdef APP-PLUS
+		plus.push.getClientInfoAsync(
+			info => {
+				console.log('Success', JSON.stringify(info.clientid));
+			},
+			e => {
+				console.log('Failed', JSON.stringify(e));
+			}
+		);
+		// #endif
+
 		uni.$on('sign_in', userId => {
 			console.log('监听到事件来自登陆页面登入记录，userId' + userId);
-			if(userId){
-				this.connectSocket(userId)
+			if (userId) {
+				this.connectSocket(userId);
 			}
 		});
 		try {
@@ -18,12 +29,12 @@ export default {
 				this.getUserInfo(token);
 			} else {
 				uni.reLaunch({
-					url: '../login/login'
+					url: '/pages/login/login'
 				});
 			}
 		} catch (e) {
 			uni.reLaunch({
-				url: '../login/login'
+				url: '/pages/login/login'
 			});
 		}
 	},
@@ -43,12 +54,12 @@ export default {
 					this.$store.commit('SetUser', data.user);
 					this.connectSocket(data.user.id);
 					uni.reLaunch({
-						url: '../index/index'
+						url: '/pages/index/index'
 					});
 				})
 				.catch(err => {
 					uni.reLaunch({
-						url: '../login/login'
+						url: '/pages/login/login'
 					});
 				});
 		},
@@ -67,7 +78,6 @@ export default {
 							this.$store.commit('SetMessages', data.msg);
 						}
 						this.$store.commit('SetUserChatList', data.userList);
-				
 					});
 					uni.onSocketError(err => {
 						uni.showToast({

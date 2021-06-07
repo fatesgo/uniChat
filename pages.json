@@ -4,14 +4,14 @@
 			"path": "pages/index/index",
 			"style": {}
 		}, {
-			"path": "pages/chat/chat",
-			"style": {
-				"navigationBarTitleText": "聊天"
-			}
-		}, {
 			"path": "pages/login/login",
 			"style": {
 
+			}
+		}, {
+			"path": "pages/chat/chat",
+			"style": {
+				"navigationBarTitleText": "聊天"
 			}
 		}, {
 			"path": "pages/user/user",
@@ -25,7 +25,8 @@
 			}
 
 		}
-	],
+
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "myChat",

@@ -126,7 +126,7 @@
 import { mapState } from 'vuex';
 import emoji_List from '@/common/emojiList.js';
 import online_Emoji from '@/common/onlineEmoji.js';
-import { getMsgList } from '@/common/api.js';
+import { getMsgList, setHaveRead } from '@/common/api.js';
 import { latelyDate, replaceEmoji, setPicSize, newDate } from '@/common/util.js';
 
 export default {
@@ -181,7 +181,7 @@ export default {
 			title: this.toUser.nickname
 		});
 		this.getMsgList();
-
+		this.setHaveRead();
 		//语音自然播放结束
 		this.AUDIO.onEnded(res => {
 			this.playMsgid = null;
@@ -201,7 +201,7 @@ export default {
 		currentMsg: {
 			deep: true,
 			handler(newMsg) {
-				if ((newMsg.to_userId == this.toUser.id&&newMsg.from_userId==this.user.id)||newMsg.to_userId == this.user.id&&newMsg.from_userId==this.toUser.id) {
+				if ((newMsg.to_userId == this.toUser.id && newMsg.from_userId == this.user.id) || (newMsg.to_userId == this.user.id && newMsg.from_userId == this.toUser.id)) {
 					this.msgList.push(newMsg);
 					this.$nextTick(function() {
 						// 滚动到底
@@ -212,6 +212,26 @@ export default {
 		}
 	},
 	methods: {
+		setHaveRead() {
+			setHaveRead({
+				to_userId: this.user.id,
+				from_userId: this.toUser.id
+			}).then(res => {
+				if(res>0){
+					let message = {
+						type: "reading",
+						to_userId: this.user.id,
+						from_userId: this.user.id,
+						content: "已经阅读",
+						time: newDate(),
+						state: 1
+					};
+					uni.sendSocketMessage({
+						data: JSON.stringify(message)
+					});
+				}
+			});
+		},
 		getMsgList() {
 			getMsgList({
 				userId: this.user.id,
@@ -515,7 +535,38 @@ export default {
 				min = min < 10 ? '0' + min : min;
 				sec = sec < 10 ? '0' + sec : sec;
 				msg.length = min + ':' + sec;
-				this.screenMsg(msg, 'voice');
+				uniCloud
+					.uploadFile({
+						filePath: e.tempFilePath,
+						cloudPath: Date.now() + '.mp3',
+						onUploadProgress(e) {
+							console.log(e);
+						}
+					})
+					.then(res => {
+						uniCloud.getTempFileURL({
+							fileList: [res.fileID],
+							success: result => {
+								msg.url = result.fileList[0].tempFileURL;
+								this.screenMsg(msg, 'voice');
+							},
+							fail: () => {
+								uni.showModal({
+									content: '获取语音临时链接失败',
+									showCancel: false
+								});
+							}
+						});
+					})
+					.catch(err => {
+						console.log(err);
+						if (err.message !== 'Fail_Cancel') {
+							uni.showModal({
+								content: `语音上传失败，错误信息为：${err.message}`,
+								showCancel: false
+							});
+						}
+					});
 			} else {
 				console.log('取消发送录音');
 			}

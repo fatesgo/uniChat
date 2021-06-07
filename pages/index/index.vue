@@ -5,7 +5,7 @@
 				<view class="user-item">
 					<view class="item-left">
 						<img class="image" :src="item.avatar" />
-						<view class="count" v-if="item.unreadCount == '1'"></view>
+						<view class="count" v-if="item.unreadCount>0"></view>
 					</view>
 					<view class="item-right">
 						<view class="item-right-line">
@@ -14,7 +14,7 @@
 						</view>
 						<view class="item-right-line">
 							<view class="introduce">{{ richText(item) }}</view>
-							<view class="count" v-if="item.unreadCount == '1'"></view>
+							<view class="count" v-if="item.unreadCount>0">{{item.unreadCount}}</view>
 						</view>
 					</view>
 				</view>
@@ -103,6 +103,18 @@ export default {
 				font-size: 30rpx;
 				line-height: 45rpx;
 				text-overflow: ellipsis; /*文字隐藏后添加省略号*/
+			}
+			.count {
+				border-radius: 15rpx;
+				background: red;
+				color: #fff;
+				min-width: 30rpx;
+				line-height: 30rpx;
+				text-align: center;
+				padding: 0 10rpx;
+				font-size: 20rpx;
+				display: inline-block;
+				box-sizing: border-box;
 			}
 			.time {
 				display: block;

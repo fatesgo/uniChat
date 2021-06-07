@@ -27,9 +27,24 @@ export const getMsgList = (data) => {
 	})
 }
 
+export const setHaveRead = (data) => {
+	return http.request({
+		url: '/api/setHaveRead/',
+		method: "PUT",
+		data: data
+	})
+}
+
 export const getUserListByUser = (userId) => {
 	return http.request({
 		url: '/api/getUserListByUser/' + userId,
 		method: "GET"
+	})
+}
+export const appPush = (data) => {
+	return http.request({
+		url: '/appPush',
+		method: "POST",
+		data: data
 	})
 }
