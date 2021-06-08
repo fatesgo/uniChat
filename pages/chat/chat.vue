@@ -1,9 +1,17 @@
 <template>
 	<view>
 		<view class="content" @touchstart="hideDrawer">
-			<scroll-view class="msg-list" scroll-y="true" :scroll-with-animation="scrollAnimation" :scroll-top="scrollTop" :scroll-into-view="scrollToView" upper-threshold="50">
+			<scroll-view
+				class="msg-list"
+				scroll-y="true"
+				:scroll-with-animation="scrollAnimation"
+				:scroll-top="scrollTop"
+				:scroll-into-view="scrollToView"
+				@scrolltoupper="loadHistory"
+				upper-threshold="50"
+			>
 				<!-- 加载历史数据waitingUI -->
-				<!-- 				<view class="loading">
+				<view class="loading" v-if="!page.end">
 					<view class="spinner">
 						<view class="rect1"></view>
 						<view class="rect2"></view>
@@ -11,7 +19,7 @@
 						<view class="rect4"></view>
 						<view class="rect5"></view>
 					</view>
-				</view> -->
+				</view>
 				<view class="row" v-for="(row, index) in msgList" :key="index" :id="'msg' + row.id">
 					<!-- 系统消息 -->
 					<block v-if="row.type == 'system'">
@@ -135,13 +143,19 @@ export default {
 		return {
 			toUser: null,
 			msgList: [],
+			page: {
+				pageNo: 0,
+				pageSize: 10,
+				end: false,
+				isHistoryLoading: false
+			},
 			inputHight: null,
 			latelyDate: latelyDate,
 			replaceEmoji: replaceEmoji,
 			//文字消息
 			textMsg: '',
 			//消息列表
-			isHistoryLoading: false,
+
 			scrollAnimation: false,
 			scrollTop: 0,
 			scrollToView: '',
@@ -180,7 +194,7 @@ export default {
 		uni.setNavigationBarTitle({
 			title: this.toUser.nickname
 		});
-		this.getMsgList();
+		this.loadHistory();
 		this.setHaveRead();
 		//语音自然播放结束
 		this.AUDIO.onEnded(res => {
@@ -212,17 +226,65 @@ export default {
 		}
 	},
 	methods: {
+		//触发滑动到顶部(加载历史信息记录)
+		loadHistory() {
+			if (this.page.isHistoryLoading) {
+				return;
+			}
+			this.page.isHistoryLoading = true; //参数作为进入请求标识，防止重复请求
+			this.scrollAnimation = false; //关闭滑动动画
+			let viewId = this.msgList.length > 0 ? this.msgList[0].id : 0; //记住第一个信息ID
+			getMsgList({
+				userId: this.user.id,
+				toUserId: this.toUser.id,
+				pageNo: this.page.pageNo,
+				pageSize: this.page.pageSize
+			}).then(list => {
+				for (let i = 0; i < list.length; i++) {
+					if (list[i].type == 'img') {
+						list[i].content = setPicSize(list[i].content);
+						this.msgImgList.push(list[i].content.url);
+					}
+				
+				}
+				if (this.page.pageNo === 0) {
+					this.msgList=list;
+					// 滚动到底部
+					this.$nextTick(() => {
+						//进入页面滚动到底部
+						this.scrollTop = 9999;
+						this.$nextTick(() => {
+							this.scrollAnimation = true;
+						});
+					});
+				} else {
+					this.msgList.unshift(...list);
+					this.$nextTick(function() {
+						this.scrollToView = 'msg' + viewId; //跳转上次的第一行信息位置
+						this.$nextTick(function() {
+							this.scrollAnimation = true; //恢复滚动动画
+						});
+					});
+				}
+				if (list.length === this.page.pageSize) {
+					this.page.pageNo++;
+					this.page.isHistoryLoading = false;
+				} else {
+					this.page.end = true;
+				}
+			});
+		},
 		setHaveRead() {
 			setHaveRead({
 				to_userId: this.user.id,
 				from_userId: this.toUser.id
 			}).then(res => {
-				if(res>0){
+				if (res > 0) {
 					let message = {
-						type: "reading",
+						type: 'reading',
 						to_userId: this.user.id,
 						from_userId: this.user.id,
-						content: "已经阅读",
+						content: '已经阅读',
 						time: newDate(),
 						state: 1
 					};
@@ -230,28 +292,6 @@ export default {
 						data: JSON.stringify(message)
 					});
 				}
-			});
-		},
-		getMsgList() {
-			getMsgList({
-				userId: this.user.id,
-				toUserId: this.toUser.id
-			}).then(list => {
-				for (let i = 0; i < list.length; i++) {
-					if (list[i].type == 'img') {
-						list[i].content = setPicSize(list[i].content);
-						this.msgImgList.push(list[i].content.url);
-					}
-				}
-				this.msgList = list;
-				// 滚动到底部
-				this.$nextTick(() => {
-					//进入页面滚动到底部
-					this.scrollTop = 9999;
-					this.$nextTick(() => {
-						this.scrollAnimation = true;
-					});
-				});
 			});
 		},
 		screenMsg(msg, type) {
@@ -282,39 +322,6 @@ export default {
 			this.screenMsg(this.textMsg, 'text');
 			this.textMsg = ''; //清空输入框
 		},
-
-		//触发滑动到顶部(加载历史信息记录)
-		/* 		loadHistory(e) {
-			if (this.isHistoryLoading) {
-				return;
-			}
-			this.isHistoryLoading = true; //参数作为进入请求标识，防止重复请求
-			this.scrollAnimation = false; //关闭滑动动画
-			let Viewid = this.msgList[0].id; //记住第一个信息ID
-			//本地模拟请求历史记录效果
-			setTimeout(() => {
-				// 消息列表
-				// 获取消息中的图片,并处理显示尺寸
-				for (let i = 0; i < list.length; i++) {
-					if (list[i].type == 'user' && list[i].msg.type == 'img') {
-						list[i].msg.content = this.setPicSize(list[i].msg.content);
-						this.msgImgList.unshift(list[i].msg.content.url);
-					}
-					list[i].msg.id = Math.floor(Math.random() * 1000 + 1);
-					this.msgList.unshift(list[i]);
-				}
-
-				//这段代码很重要，不然每次加载历史数据都会跳到顶部
-				this.$nextTick(function() {
-					this.scrollToView = 'msg' + Viewid; //跳转上次的第一行信息位置
-					this.$nextTick(function() {
-						this.scrollAnimation = true; //恢复滚动动画
-					});
-				});
-				this.isHistoryLoading = false;
-			}, 1000);
-		}, */
-		// 加载初始页面消息
 
 		//更多功能(点击+弹出)
 		showMore() {
