@@ -8,13 +8,19 @@ export default {
 		plus.push.getClientInfoAsync(
 			info => {
 				console.log('Success', JSON.stringify(info.clientid));
+				this.$store.commit('SetUserClientid', info.clientid);
 			},
 			e => {
 				console.log('Failed', JSON.stringify(e));
 			}
 		);
+		plus.push.addEventListener('click', message => {
+			plus.nativeUI.toast(JSON.stringify(message));
+		});
+		plus.push.addEventListener('receive', message => {
+			plus.nativeUI.toast(JSON.stringify(message));
+		});
 		// #endif
-
 		uni.$on('sign_in', userId => {
 			console.log('监听到事件来自登陆页面登入记录，userId' + userId);
 			if (userId) {
@@ -23,18 +29,17 @@ export default {
 		});
 		try {
 			const token = uni.getStorageSync('token');
-			this.$store.commit('SetToken', token);
 			if (token) {
 				this.$store.commit('SetToken', token);
-				this.getUserInfo(token);
+				this.getUserInfo();
 			} else {
 				uni.reLaunch({
-					url: '/pages/login/login'
+					url: '/pages/login/index'
 				});
 			}
 		} catch (e) {
 			uni.reLaunch({
-				url: '/pages/login/login'
+				url: '/pages/login/index'
 			});
 		}
 	},
@@ -59,13 +64,13 @@ export default {
 				})
 				.catch(err => {
 					uni.reLaunch({
-						url: '/pages/login/login'
+						url: '/pages/login/index'
 					});
 				});
 		},
 		connectSocket(userId) {
 			uni.connectSocket({
-				url: SOCKET_URL + `/webSocket/` + userId,
+				url: SOCKET_URL + `/api/webSocket/` + userId,
 				success: res => {
 					uni.onSocketOpen(() => {
 						console.log('WebSocket连接已打开！');
@@ -98,7 +103,7 @@ export default {
 				},
 				fail: () => {
 					uni.showToast({
-						title: '连接失败，请检查网络',
+						title: 'WebSocket连接失败，请检查网络',
 						icon: 'none',
 						duration: 2000
 					});

@@ -3,7 +3,7 @@
 		<view v-for="(item, index) in userList" :key="index">
 			<view class="user-row" @tap="goToChat(item)">
 				<view class="user-item">
-					<view class="item-left"><img class="image" :src="item.avatar" /></view>
+					<view class="item-left"><image class="image" :src="item.avatar" /></view>
 					<view class="item-right">
 						<view class="item-right-line">
 							<view class="title">{{ item.nickname }}</view>
@@ -39,7 +39,7 @@ export default {
 		goToChat(user) {
 			if (!this.user.id) {
 				uni.navigateTo({
-					url: '../login/login'
+					url: '../login/index'
 				});
 			}
 			uni.navigateTo({

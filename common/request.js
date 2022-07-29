@@ -23,7 +23,18 @@ export default {
 							})
 							reject(response.data)
 						}
-					} else {
+					} else if(response.data.code===401) {
+							uni.showToast({
+								title: response.data.msg,
+								icon: "none",
+								duration: 5000
+							})
+							uni.reLaunch({
+								url:"/pages/login/index"
+							})
+							reject(response.data)
+					
+					}else{
 						uni.showToast({
 							title: response.data.error || "服务器内部错误！",
 							icon: "none"

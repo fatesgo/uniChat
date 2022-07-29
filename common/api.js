@@ -14,14 +14,14 @@ export const login = (data) => {
 }
 export const getUserInfo = (data) => {
 	return http.request({
-		url: '/api/getUserInfoByToken',
+		url: '/api/user/getUserInfo',
 		method: "GET"
 	})
 }
 
 export const getMsgList = (data) => {
 	return http.request({
-		url: '/api/getMsgList/',
+		url: '/api/chat/getMsgList/',
 		method: "GET",
 		data: data
 	})
@@ -29,7 +29,7 @@ export const getMsgList = (data) => {
 
 export const setHaveRead = (data) => {
 	return http.request({
-		url: '/api/setHaveRead/',
+		url: '/api/chat/setHaveRead/',
 		method: "PUT",
 		data: data
 	})
@@ -37,14 +37,15 @@ export const setHaveRead = (data) => {
 
 export const getUserListByUser = (userId) => {
 	return http.request({
-		url: '/api/getUserListByUser/' + userId,
+		url: '/api/chat/getUserListByUser/' + userId,
 		method: "GET"
 	})
 }
-export const appPush = (data) => {
+
+export const register = (user) => {
 	return http.request({
-		url: '/appPush',
+		url: '/api/register',
 		method: "POST",
-		data: data
+		data: user
 	})
 }

@@ -1,40 +1,40 @@
 <template>
-	<view class="content">
-		<view class="logo"><image src="../../static/logo.jpg" mode=""></image></view>
-		<view class="uni-form-item uni-column"><input class="uni-input" placeholder="请输入用户名" v-model="loginForm.username" /></view>
-		<view class="uni-form-item uni-column column-with-btn">
-			<input type="text" class="uni-input" placeholder="请输入图片验证码" v-model="loginForm.code" />
-			<image :src="codeUrl" class="captcha" @click="getCode()"></image>
+	<view>
+		<view class="from">
+			<view class="input-box">
+				<image src="/static/images/login/zh@2x.png"></image>
+				<input placeholder="账号" v-model="loginForm.username" />
+			</view>
+			<view class="input-box">
+				<image src="/static/images/login/mm@2x.png"></image>
+				<input placeholder="密码" v-model="loginForm.password" />
+			</view>
+			<view class="forget">忘记密码</view>
+			<view class="btn"><view class="purple" @click="login">登陆</view></view>
 		</view>
-		<view class="uni-form-item uni-column"><input type="password" class="uni-input" placeholder="请输入密码" v-model="loginForm.password" /></view>
-		<view class="login"><view class="purple" @click="login">登陆</view></view>
+		<view class="bottom">
+			<view class="tag">其他方式登录</view>
+			<view class="rests">
+				<image src="/static/images/login/wecat@2x.png" class="icon" mode=""></image>
+				<image src="/static/images/login/qq@2x.png" class="icon" mode=""></image>
+				<image src="/static/images/login/weibo@2x.png" class="icon" mode=""></image>
+			</view>
+		</view>
 	</view>
 </template>
 
 <script>
-import { getCode, login, getUserInfo, appPush } from '@/common/api.js';
+import { login, getUserInfo } from '@/common/api.js';
 export default {
 	data() {
 		return {
-			codeUrl: null,
 			loginForm: {
-				username: 'hwj',
-				password: '123456',
-				code: null,
-				uuid: null
+				username: 'test',
+				password: '123456'
 			}
 		};
 	},
-	onLoad() {
-		this.getCode();
-	},
 	methods: {
-		getCode() {
-			getCode().then(data => {
-				this.codeUrl = 'data:image/jpg;base64,' + data.img.replace(/[\r\n]/g, '');
-				this.loginForm.uuid = data.uuid;
-			});
-		},
 		login() {
 			const username = this.loginForm.username.trim();
 			const password = this.loginForm.password.trim();
@@ -51,7 +51,6 @@ export default {
 					this.getUserInfo();
 				})
 				.catch(() => {
-					this.getCode();
 				});
 		},
 		getUserInfo() {
@@ -62,70 +61,88 @@ export default {
 					url: '../index/index'
 				});
 			});
-		},
-	
+		}
 	}
 };
 </script>
 
 <style lang="scss" scoped>
-$color-primary: #b49950;
-.content {
-	padding: 60rpx 100rpx 100rpx;
-}
-.logo {
-	text-align: center;
-	image {
-		height: 200rpx;
-		width: 200rpx;
-		border-radius: 50%;
-	}
-}
-.uni-form-item {
-	margin-bottom: 40rpx;
-	padding: 0;
-	border-bottom: 1px solid #e3e3e3;
-	.uni-input {
-		font-size: 30rpx;
-		padding: 7px 0;
-	}
-}
-.column-with-btn {
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	button {
-		font-size: 24rpx;
-		margin: 0;
-		width: 180rpx;
-		text-align: center;
-		&:after {
-			border: none;
-		}
-		&.active {
-			background-color: $color-primary;
-			color: $uni-text-color-inverse;
-		}
-	}
-}
-.captcha {
-	width: 150rpx;
-	height: 60rpx;
-}
-.login {
+.from {
 	width: 100%;
-	text-align: center;
-	.purple {
-		background-color: #1890ff;
-		width: 320rpx; //515
-		height: 88rpx;
-		opacity: 0.95;
-		border-radius: 44rpx;
-		line-height: 88rpx;
-		font-size: 34rpx;
-		color: #ffffff;
+	margin-top: 45rpx;
+	.input-box {
+		width: 576rpx;
+		height: 102rpx;
+		display: flex;
+		align-items: center;
+		background-color: #f2f8ff;
+		border-radius: 48rpx;
+		margin: 20rpx auto;
+		border: solid 1rpx #83b5ff;
+		image {
+			width: 30rpx;
+			height: 30rpx;
+			padding: 0 23rpx 0 38rpx;
+		}
+	}
+	.forget {
+		text-align: right;
+		padding-right: 100rpx;
+		color: #4faffe;
+		text-decoration: underline;
+		margin-bottom: 18rpx;
+	}
+	.btn {
+		width: 623rpx;
+		height: 100rpx;
+		line-height: 100rpx;
+		border-radius: 42rpx;
 		margin: 0 auto;
+		text-align: center;
+		background: linear-gradient(270deg, #358bff, #3be3fc);
+		color: white;
+	}
+}
+.bottom {
+	margin-top: 50rpx;
+	.tag {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 22rpx;
+		font-family: Adobe Heiti Std;
+		font-weight: normal;
+		color: #9f9f9f;
+		line-height: 34rpx;
+
+		&::before {
+			content: '';
+			display: block;
+			width: 160rpx;
+			height: 1px;
+			background: #d8d8d8;
+			opacity: 0.86;
+		}
+
+		&::after {
+			content: '';
+			display: block;
+			width: 160rpx;
+			height: 1px;
+			background: #d8d8d8;
+			opacity: 0.86;
+		}
+	}
+
+	.rests {
+		margin-top: 50rpx;
+		display: flex;
+		align-items: center;
+		justify-content: space-evenly;
+		.icon {
+			width: 73rpx;
+			height: 73rpx;
+		}
 	}
 }
 </style>

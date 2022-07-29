@@ -15,13 +15,16 @@ const store = new Vuex.Store({
 
 	},
 	mutations: {
-		SetToken: (state, token) => {
+		SetToken(state, token){
 			state.token = token;
 			uni.setStorageSync('token', token);
 		},
-		SetUser: (state, user) => {
+		SetUser(state, user)  {
 			state.user = user;
 			uni.setStorageSync('user', user);
+		},
+		SetUserClientid(state, clientid)  {
+			state.user.clientid = clientid;
 		},
 		SetMessages(state, msg) {
 			state.currentMsg = msg;

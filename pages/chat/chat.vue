@@ -60,7 +60,9 @@
 									<view class="time">{{ latelyDate(row.time) }}</view>
 								</view>
 								<!-- 文字消息 -->
-								<view v-if="row.type == 'text'" class="bubble"><rich-text :nodes="replaceEmoji(row.content)"></rich-text></view>
+								<view v-if="row.type == 'text'" class="bubble">
+									<rich-text :nodes="replaceEmoji(row.content)"></rich-text>
+								</view>
 								<!-- 语音消息 -->
 								<view v-if="row.type == 'voice'" class="bubble voice" @tap="playVoice(row)" :class="playMsgid == row.id ? 'play' : ''">
 									<view class="icon other-voice"></view>
@@ -77,11 +79,11 @@
 			</scroll-view>
 		</view>
 		<!-- 抽屉栏 -->
-		<view class="popup-layer" :class="popupLayerClass" @touchmove.stop.prevent="null">
+		<view class="popup-layer" :class="popupLayerClass" @touchmove.stop.prevent="discard">
 			<!-- 表情 -->
 			<swiper class="emoji-swiper" :class="{ hidden: hideEmoji }" indicator-dots="true" duration="150">
 				<swiper-item v-for="(page, pid) in emojiList" :key="pid">
-					<view v-for="(em, eid) in page" :key="eid" @tap="addEmoji(em)"><image mode="widthFix" :src="'/static/img/emoji/' + em.url"></image></view>
+					<view v-for="(em, eid) in page" :key="eid" @tap="addEmoji(em)"><image mode="widthFix" :src="'/static/images/emoji/' + em.url"></image></view>
 				</swiper-item>
 			</swiper>
 			<!-- 更多功能 相册-拍照-红包 -->
@@ -211,13 +213,26 @@ export default {
 		});
 		// #endif
 	},
+	onUnload() {
+		// #ifndef H5
+		if (this.RECORDER) {
+			this.RECORDER.onPause();
+			this.RECORDER = null;
+		}
+		// #endif
+
+		if (this.AUDIO) {
+			this.AUDIO.onPause();
+			this.AUDIO.destroy();
+		}
+	},
 	watch: {
 		currentMsg: {
 			deep: true,
 			handler(newMsg) {
 				if ((newMsg.to_userId == this.toUser.id && newMsg.from_userId == this.user.id) || (newMsg.to_userId == this.user.id && newMsg.from_userId == this.toUser.id)) {
 					this.msgList.push(newMsg);
-					this.$nextTick(function() {
+					this.$nextTick(()=>{
 						// 滚动到底
 						this.scrollToView = 'msg' + newMsg.id;
 					});
@@ -245,10 +260,9 @@ export default {
 						list[i].content = setPicSize(list[i].content);
 						this.msgImgList.push(list[i].content.url);
 					}
-				
 				}
 				if (this.page.pageNo === 0) {
-					this.msgList=list;
+					this.msgList = list;
 					// 滚动到底部
 					this.$nextTick(() => {
 						//进入页面滚动到底部
@@ -261,7 +275,7 @@ export default {
 					this.msgList.unshift(...list);
 					this.$nextTick(function() {
 						this.scrollToView = 'msg' + viewId; //跳转上次的第一行信息位置
-						this.$nextTick(function() {
+						this.$nextTick(()=>{
 							this.scrollAnimation = true; //恢复滚动动画
 						});
 					});
@@ -583,10 +597,13 @@ export default {
 		switchVoice() {
 			this.hideDrawer();
 			this.isVoice = this.isVoice ? false : true;
+		},
+		discard() {
+			return;
 		}
 	}
 };
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 @import '@/common/css/chat.scss';
 </style>

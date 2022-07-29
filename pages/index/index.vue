@@ -4,7 +4,7 @@
 			<view class="user-row" @tap="goToChat(item)">
 				<view class="user-item">
 					<view class="item-left">
-						<img class="image" :src="item.avatar" />
+						<image class="image" :src="item.avatar"  />
 						<view class="count" v-if="item.unreadCount>0"></view>
 					</view>
 					<view class="item-right">
@@ -125,14 +125,13 @@ export default {
 			}
 			.introduce {
 				width: 100%;
-				//font-family: '微软雅黑';
 				color: #808080;
-				//height: 50rpx;
+				height: 50rpx;
 				line-height: 36rpx;
 				font-size: 24rpx;
-				//overflow: hidden; /**自动隐藏文字*/
+				overflow: hidden; /**自动隐藏文字*/
 				text-overflow: ellipsis; /**文字隐藏后添加省略号*/
-				//white-space: nowrap; /**强制不换行*/
+				white-space: nowrap; /**强制不换行*/
 			}
 		}
 	}

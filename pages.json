@@ -1,17 +1,17 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
+			"path": "pages/login/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		}, {
 			"path": "pages/index/index",
 			"style": {}
 		}, {
-			"path": "pages/login/login",
-			"style": {
-
-			}
-		}, {
 			"path": "pages/chat/chat",
 			"style": {
-				"navigationBarTitleText": "聊天"
+				"navigationBarTitleText": "chat"
 			}
 		}, {
 			"path": "pages/user/user",
@@ -26,6 +26,32 @@
 
 		}
 
+	
+	    ,{
+            "path" : "pages/live/live",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/live/play",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": ""
+            }
+            
+        }
+        ,{
+            "path" : "pages/live/pusher",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": ""
+            }
+            
+        }
     ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
@@ -40,19 +66,24 @@
 		"backgroundColor": "#ffffff",
 		"list": [{
 				"pagePath": "pages/index/index",
-				"iconPath": "static/img/tabBar/index.png",
-				"selectedIconPath": "static/img/tabBar/index-on.png",
+				"iconPath": "static/images/tabBar/index.png",
+				"selectedIconPath": "static/images/tabBar/index-on.png",
 				"text": "首页"
 			}, {
 				"pagePath": "pages/plaza/plaza",
-				"iconPath": "static/img/tabBar/user.png",
-				"selectedIconPath": "static/img/tabBar/user-on.png",
+				"iconPath": "static/images/tabBar/user.png",
+				"selectedIconPath": "static/images/tabBar/user-on.png",
 				"text": "广场"
+			},{
+				"pagePath": "pages/live/live",
+				"iconPath": "static/images/tabBar/live.png",
+				"selectedIconPath": "static/images/tabBar/live-on.png",
+				"text": "直播"
 			},
 			{
 				"pagePath": "pages/user/user",
-				"iconPath": "static/img/tabBar/user.png",
-				"selectedIconPath": "static/img/tabBar/user-on.png",
+				"iconPath": "static/images/tabBar/user.png",
+				"selectedIconPath": "static/images/tabBar/user-on.png",
 				"text": "我的"
 			}
 		]
